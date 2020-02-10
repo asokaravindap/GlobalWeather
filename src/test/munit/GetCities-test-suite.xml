@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="new-test-suite.xml" />
+	<munit:test name="getCities-test-suite-get:\getCities:globalweatherapi-configTest" doc:id="62e1a477-f1ea-423a-b335-34c2e5b26119" description="Test">
+		<munit:execution >
+			<ee:transform doc:name="Set_Query_Params" doc:id="785baec8-2844-45b7-bfc7-0c858b52ace1" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-payload>
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		countryName: "Australia"
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\getCities:globalweatherapi-config" doc:id="217b7a95-b3f9-4ba1-942c-d16c3d7b4d7b" name="get:\getCities:globalweatherapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<set-variable value="#['[
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Archerfield Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Amberley Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Alice Springs Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Brisbane Airport M. O&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Coolangatta Airport Aws&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Cairns Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Charleville Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Gladstone&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Longreach Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Mount Isa Amo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Mackay Mo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Oakey Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Proserpine Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Rockhampton Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Broome Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Townsville Amo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Weipa City&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Gove Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Tennant Creek Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Yulara Aws&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Albury Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Devonport East&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Goldstream Aws&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;East Sale Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Hobart Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Launceston Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Laverton Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Moorabbin Airport Aws&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Mount Gambier Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Mildura Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Melbourne Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Macquarie Island&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Wynyard West&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Adelaide Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Albany Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Broken Hill Patton Street&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Ceduna Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Derby&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Darwin Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Bullsbrook Pearce Amo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Edinburgh M. O.&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Forrest Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Geraldton Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Kalgoorlie Boulder Amo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Kununurra Kununurra Aws&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Leigh Creek Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Learmonth Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Meekatharra Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Port Hedland Pardoo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Parafield Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Belmont Perth Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Katherine Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Woomera Aerodrome&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Bankstown Airport Aws&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Canberra&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Coffs Harbour Mo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Cooma&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Camden Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Dubbo&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Norfolk Island Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Nowra Ran Air Station&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Richmond Aus-Afb&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Sydney Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Tamworth Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Wagga Airport&quot;
+  },
+  {
+    &quot;Country&quot;: &quot;Australia&quot;,
+    &quot;City&quot;: &quot;Williamtown Aerodrome&quot;
+  }
+]']" doc:name="Set_Expected_Payload" doc:id="d1d6ca68-ec80-4151-8015-b390780b943c" variableName="expectedPayload" mimeType="application/json"/>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="215d361e-b323-4c64-a303-8160097eb886" actual='#[payload]' expected="#[%dw 2.0
+output application/java
+---
+vars.expectedPayload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

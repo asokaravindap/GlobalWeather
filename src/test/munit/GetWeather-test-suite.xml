@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="new-test-suite.xml" />
+	<munit:test name="getWeather-test-suite-get:\getWeather:globalweatherapi-configTest" doc:id="39336f49-3c39-4ea1-81d2-a69baee82824" description="Test">
+		<munit:execution >
+			<ee:transform doc:name="Set_Query_Params" doc:id="d97e0c6f-0b22-4f31-b6b9-2f0a5e0dbf4e" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-payload>
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	queryParams: {
+		countryName: "Australia",
+		cityName : "Melbourne"
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\getWeather:globalweatherapi-config" doc:id="f467aba9-dd47-44b5-a721-2acf9fbdb9d3" name="get:\getWeather:globalweatherapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<set-variable doc:name="Set_Expected_Payload" doc:id="3b3f0ec1-a9de-433e-9364-b88ec5b4cf9c" variableName="expectedPayload" mimeType="application/json" value="#['{
+  &quot;Location&quot;: &quot;Melbourne&quot;,
+  &quot;Time&quot;: &quot;11 AM&quot;,
+  &quot;Wind&quot;: &quot;15 km per hour&quot;,
+  &quot;Visibility&quot;: &quot;10 km&quot;,
+  &quot;SkyConditions&quot;: &quot;sunny&quot;,
+  &quot;Temperature&quot;: 18,
+  &quot;DewPoint&quot;: &quot;2 C&quot;,
+  &quot;RelativeHumidity&quot;: 35,
+  &quot;Status&quot;: &quot;Normal&quot;
+}']"/>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="8b532a98-844f-416a-8364-03dd47bc1666" actual="#[payload]" expected="#[%dw 2.0
+output application/java
+---
+vars.expectedPayload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

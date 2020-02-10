@@ -1,0 +1,106 @@
+#%RAML 1.0
+title: GlobalWeatherAPI
+version: 1.0
+baseUri: http://server/api/{version}
+/getWeather:
+  displayName: Get weather
+  get:
+    description: Get weather report for all major cities around the world
+    queryParameters:
+      cityName:
+        required: false
+        type: string
+      countryName:
+        required: false
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "Location" : "Melbourne",
+                "Time" : "11 AM",
+                "Wind" : "15 km per hour",
+                "Visibility" : "10 km",
+                "SkyConditions" : "sunny",
+                "Temperature" : 18,
+                "DewPoint" : "2 C",
+                "RelativeHumidity" : 35,
+                "Status" : "Normal"
+              }
+            type: |
+              {
+                "type": "object",
+                "$schema": "http://json-schema.org/draft-03/schema",
+                "properties": {
+                  "Location": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "Time": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "Wind": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "Visibility": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "SkyConditions": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "Temperature": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "DewPoint": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "RelativeHumidity": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "Status": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }  
+/getCities:
+  displayName: Get Cities
+  get:
+    description: Get all major cities by country name
+    queryParameters:
+      countryName:
+        required: false
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              [
+                {
+                  "Country": "Australia",
+                  "City": "Archerfield Aerodrome"
+                }
+              ]
+            type: |
+              {
+                "type": "array",
+                "$schema": "http://json-schema.org/draft-03/schema",
+                "properties": {
+                  "Country": {
+                    "type": "string"
+                  },
+                  "City": {
+                    "type": "string"
+                  }
+                }
+              } 

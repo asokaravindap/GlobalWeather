@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="stringPayload" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="citiesPayload" format="xml">
+      <types:example format="xml" element="NewDataSet" location="examples/citiesResponseXML.xml"/>
+    </types:type>
+    <types:type name="weatherPayload" format="xml">
+      <types:example format="xml" element="NewDataSet" location="examples/weatherResponseXML.xml"/>
+    </types:type>
+    <types:type name="errorMessage" format="json">
+      <types:shape format="weave" example="examples/errorResponse.json"><![CDATA[%dw 2.0
+
+type errorMessage = {| message: String |} {"example": "{\\\"message\\\":\\\"error\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="queryParamCountryName" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="countyNameTest" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#be773df4-091d-4feb-b02d-422466fec29d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="stringPayload"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#20d7e7e1-b219-48cb-9f9c-9c7305411d12">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="stringPayload"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#77ccb5ab-12e4-49a5-af9a-1d07e3d7fac7">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="citiesPayload"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#abd9d2aa-1b22-4924-b336-7ab2af84e165">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="weatherPayload"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d97e0c6f-0b22-4f31-b6b9-2f0a5e0dbf4e">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:attributes type="queryParamCountryName"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
