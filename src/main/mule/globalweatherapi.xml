@@ -3,6 +3,8 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+    <!-- Global configurations -->
     <http:listener-config name="globalweatherapi-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>  
@@ -15,6 +17,8 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
 		</wsc:connection>
 	</wsc:config>
+	
+	<!-- Main flow -->
 	<flow name="globalweatherapi-main">
         <http:listener config-ref="globalweatherapi-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -26,6 +30,8 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="globalweatherapi-config" />
+        
+        <!-- Default errors -->
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -107,6 +113,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
+    
     <flow name="globalweatherapi-console">
         <http:listener config-ref="globalweatherapi-httpListenerConfig" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -134,14 +141,22 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
+    
+    <!-- Subflow for removing CDATA block and unscaping the XML -->
     <sub-flow name="XMLUnscapingSubFlow" doc:id="be773df4-091d-4feb-b02d-422466fec29d">
 		<set-payload value='#[payload replace "&amp;lt;" with ("&lt;")]' doc:name="Add&lt;" doc:id="974d71d0-89eb-447a-a620-7ab6e619706e" mimeType="text/plain" />
 		<set-payload value='#[payload replace "&amp;gt;" with ("&gt;")]' doc:name="Add&gt;" doc:id="201f5757-daf4-470e-a276-7a3fb513a94c" mimeType="text/plain" />
 		<set-payload value='#[payload replace "&lt;![CDATA[" with ("")]' doc:name="Remove_CDATA_start" doc:id="444f3403-8936-4c70-a51b-c6144f44e08a" />
 		<set-payload value='#[payload replace "]]&gt;" with ("")]' doc:name="Remove_CDATA_end" doc:id="8c18120e-918a-47b7-a606-d58d25aeb98e" />
 	</sub-flow>
+	
+	<!-- API implementation for retrieving the cities data  -->
 	<flow name="get:\getCities:globalweatherapi-config">
+		
+		<!-- Validating the input query parameters -->
 		<validation:is-not-blank-string doc:name="Is not blank string" doc:id="f42e6daa-58b6-4d0c-adc1-3b4bcff544ed" value="#[attributes.queryParams.countryName]" message='#["countryName unavailable"]'/>
+		
+		<!-- Preparing the SOAP message -->
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:name="Prepare_SOAP">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -156,7 +171,11 @@ ns ns1 http://www.webserviceX.NET
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+        
+        <!-- Consuming the SOAP service -->
 		<wsc:consume operation="GetCitiesByCountry" doc:id="92cf1515-2682-4c69-b62a-b4a585740a4c" config-ref="Web_Service_Consumer_Config" doc:name="SOAP_Service"/>
+		
+		<!-- Transforming the payload from XML into text -->
 		<ee:transform doc:name="XML_to_Text" doc:id="20d7e7e1-b219-48cb-9f9c-9c7305411d12" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -166,7 +185,11 @@ ns ns0 http://www.webserviceX.NET
 write(payload.body.ns0#GetCitiesByCountryResponse, "text/plain", {"encoding": "UTF-8"})]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
+		<!-- Calling the subflow to unscape the XML and remove CDATA block -->
 		<flow-ref doc:name="Unscape_XML" doc:id="a61de81c-93a0-4691-9f42-ecea0c17e12a" name="XMLUnscapingSubFlow"/>
+		
+		<!-- Tranform the payload from text into XML -->
 		<ee:transform doc:name="Text_to_XML" doc:id="77ccb5ab-12e4-49a5-af9a-1d07e3d7fac7" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -175,6 +198,8 @@ output application/xml
 read(payload, "application/xml")]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
+		<!-- Transform the payload from XML into JSON -->
 		<ee:transform doc:name="XML_to_JSON" doc:id="e500ee3b-13f1-41be-aad7-8b9faec1ca38" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -186,6 +211,8 @@ payload.NewDataSet.*Table map (item, index) -> {
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
+		<!-- Local error handler -->
 		<error-handler>
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="00992d31-125c-484a-bfae-ff520a106442" type="VALIDATION:BLANK_STRING">
 				<ee:transform doc:name="Transform Message" doc:id="00c3393d-2fe6-4536-8845-818261a175ec" >
@@ -204,11 +231,17 @@ output application/json
 			</on-error-propagate>
 		</error-handler>
     </flow>
+    
+    <!-- API implementation for retrieving the weather data -->
 	<flow name="get:\getWeather:globalweatherapi-config">
+        
+        <!-- Validate the input query parameters -->
         <validation:is-not-blank-string doc:name="Is not blank string" doc:id="e71b236a-eff6-405f-8f0d-36fb26faa868" value="#[attributes.queryParams.cityName]" message='#["cityName is unavailable"]'/>
 		<validation:is-not-blank-string doc:name="Is not blank string" doc:id="dacf1d66-39ae-4cfb-a932-0c066ed13637" value="#[attributes.queryParams.countryName]" message='#["countryName is unavailable"]'>
 			<error-mapping targetType="APP:countryName" />
 		</validation:is-not-blank-string>
+		
+		<!-- Prepares the SOAP message -->
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:name="Prepare_SOAP">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -224,7 +257,11 @@ ns ns1 http://www.webserviceX.NET
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+        
+        <!-- Consume the SOAP service -->
 		<wsc:consume doc:name="SOAP_Service" doc:id="b3007bcc-f80f-4818-b79d-79791ff55f5d" config-ref="Web_Service_Consumer_Config1" operation="GetWeather"/>
+		
+		<!-- Transform the payload from XML into text -->
 		<ee:transform doc:name="XML_to_Text" doc:id="0786ee6c-6795-49d7-ad6d-c5d1a56b356b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -234,7 +271,11 @@ ns ns0 http://www.webserviceX.NET
 write(payload.body.ns0#GetWeatherResponse, "text/plain", {"encoding": "UTF-8"})]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
+		<!-- Calling the subflow to unscape the XML and to remove the CDATA block -->
 		<flow-ref doc:name="Unscape_XML" doc:id="f5d87318-daae-4d06-8d49-ecd6e9f13d3d" name="XMLUnscapingSubFlow"/>
+		
+		<!-- Transform the payload from text into XML -->
 		<ee:transform doc:name="Text_to_XML" doc:id="abd9d2aa-1b22-4924-b336-7ab2af84e165" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -243,6 +284,8 @@ output application/xml
 read(payload, "application/xml")]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
+		<!-- Transform the payload from XML into JSON -->
 		<ee:transform doc:name="XML_to_JSON" doc:id="a777cd62-834f-4967-aa21-fb12a2f82446" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -262,6 +305,8 @@ ns ns0 http://www.webserviceX.NET
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		
+		<!-- Local error handler -->
 		<error-handler>
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f784c786-b980-4b8e-9e2e-63088b28c69b" type="VALIDATION:BLANK_STRING">
 				<ee:transform doc:name="Transform Message" doc:id="4bf002fa-0beb-4a45-a9e1-07ad0cd6fe26" >
