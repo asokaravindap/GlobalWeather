@@ -172,10 +172,10 @@ ns ns1 http://www.webserviceX.NET
             </ee:message>
         </ee:transform>
         
-        <!-- Consuming the SOAP service -->
+        <!-- Consume the SOAP service -->
 		<wsc:consume operation="GetCitiesByCountry" doc:id="92cf1515-2682-4c69-b62a-b4a585740a4c" config-ref="Web_Service_Consumer_Config" doc:name="SOAP_Service"/>
 		
-		<!-- Transforming the payload from XML into text -->
+		<!-- Transform the payload from XML into text -->
 		<ee:transform doc:name="XML_to_Text" doc:id="20d7e7e1-b219-48cb-9f9c-9c7305411d12" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -186,7 +186,7 @@ write(payload.body.ns0#GetCitiesByCountryResponse, "text/plain", {"encoding": "U
 			</ee:message>
 		</ee:transform>
 		
-		<!-- Calling the subflow to unscape the XML and remove CDATA block -->
+		<!-- Call the subflow to unscape the XML and remove CDATA block -->
 		<flow-ref doc:name="Unscape_XML" doc:id="a61de81c-93a0-4691-9f42-ecea0c17e12a" name="XMLUnscapingSubFlow"/>
 		
 		<!-- Tranform the payload from text into XML -->
@@ -241,7 +241,7 @@ output application/json
 			<error-mapping targetType="APP:countryName" />
 		</validation:is-not-blank-string>
 		
-		<!-- Prepares the SOAP message -->
+		<!-- Prepare the SOAP message -->
 		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:name="Prepare_SOAP">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -272,7 +272,7 @@ write(payload.body.ns0#GetWeatherResponse, "text/plain", {"encoding": "UTF-8"})]
 			</ee:message>
 		</ee:transform>
 		
-		<!-- Calling the subflow to unscape the XML and to remove the CDATA block -->
+		<!-- Call the subflow to unscape the XML and to remove the CDATA block -->
 		<flow-ref doc:name="Unscape_XML" doc:id="f5d87318-daae-4d06-8d49-ecd6e9f13d3d" name="XMLUnscapingSubFlow"/>
 		
 		<!-- Transform the payload from text into XML -->
