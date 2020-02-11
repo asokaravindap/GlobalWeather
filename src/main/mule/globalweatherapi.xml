@@ -171,10 +171,17 @@ ns ns1 http://www.webserviceX.NET
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        
-        <!-- Consume the SOAP service -->
-		<wsc:consume operation="GetCitiesByCountry" doc:id="92cf1515-2682-4c69-b62a-b4a585740a4c" config-ref="Web_Service_Consumer_Config" doc:name="SOAP_Service"/>
+               
+		<logger level="INFO" doc:name="Logger" doc:id="753b9c5a-c828-45e7-87ee-46a173a58eb3" message="#['Ready to consume the SOAP service']"/>
 		
+		<!-- Consume the SOAP service -->
+		<wsc:consume operation="GetCitiesByCountry" doc:id="92cf1515-2682-4c69-b62a-b4a585740a4c" config-ref="Web_Service_Consumer_Config" doc:name="SOAP_Service"/>
+				
+		<logger level="INFO" doc:name="Logger" doc:id="ca7b9889-c78f-44d4-bbfd-ed22ccfb16d5" message="#[%dw 2.0
+ns ns0 http://www.webserviceX.NET
+---
+'SOAP response : ' ++ payload.body.ns0#GetCitiesByCountryResponse]"/>
+
 		<!-- Transform the payload from XML into text -->
 		<ee:transform doc:name="XML_to_Text" doc:id="20d7e7e1-b219-48cb-9f9c-9c7305411d12" >
 			<ee:message >
@@ -257,9 +264,16 @@ ns ns1 http://www.webserviceX.NET
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        
-        <!-- Consume the SOAP service -->
+                
+		<logger level="INFO" doc:name="Logger" doc:id="e38c8c22-0184-47bc-882c-53973355410e" message="#['Ready to consume the SOAP service']"/>
+		
+		<!-- Consume the SOAP service -->
 		<wsc:consume doc:name="SOAP_Service" doc:id="b3007bcc-f80f-4818-b79d-79791ff55f5d" config-ref="Web_Service_Consumer_Config1" operation="GetWeather"/>
+				
+		<logger level="INFO" doc:name="Logger" doc:id="3392710b-32ae-4e6d-8275-74bf646d41e0" message="#[%dw 2.0
+ns ns0 http://www.webserviceX.NET
+---
+'SOAP response : ' ++ payload.body.ns0#GetWeatherResponse]"/>
 		
 		<!-- Transform the payload from XML into text -->
 		<ee:transform doc:name="XML_to_Text" doc:id="0786ee6c-6795-49d7-ad6d-c5d1a56b356b" >
